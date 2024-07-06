@@ -42,9 +42,7 @@ services:
       - my_network
 
   notification-ms:
-    build:
-      context: ../notification-ms
-    image: notification-ms
+    image: jahangirzada/notification-ms:1.1
     container_name: notification-ms
     restart: always
     ports:
@@ -56,9 +54,7 @@ services:
       service: microservice-base-config
 
   user-ms:
-    build:
-      context: ../user-ms
-    image: user-ms
+    image: jahangirzada/user-ms:2.0
     container_name: user-ms
     restart: always
     ports:
@@ -86,9 +82,7 @@ services:
       - my_network
 
   book-ms:
-    build:
-      context: ../book-ms
-    image: book-ms
+    image: jahangirzada/book-ms:2.0
     container_name: book-ms
     restart: always
     ports:

@@ -2,8 +2,6 @@ package com.example.bookms.model.entity;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.hibernate.validator.constraints.UniqueElements;
-
 import javax.persistence.*;
 import java.util.List;
 
