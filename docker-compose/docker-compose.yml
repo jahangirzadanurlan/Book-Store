@@ -1,0 +1,120 @@
+version: '3'
+services:
+  zookeeper:
+    image: "docker.io/bitnami/zookeeper:3"
+    ports:
+      - "2181:2181"
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    networks:
+      - my_network
+
+  kafka:
+    image: "docker.io/bitnami/kafka:2-debian-10"
+    ports:
+      - "9092:9092"
+    expose:
+      - "9093"
+    environment:
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_ADVERTISED_LISTENERS=INSIDE://kafka:9093,OUTSIDE://kafka:9092
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+      - KAFKA_LISTENERS=INSIDE://0.0.0.0:9093,OUTSIDE://0.0.0.0:9092
+      - KAFKA_INTER_BROKER_LISTENER_NAME=INSIDE
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    depends_on:
+      - zookeeper
+    networks:
+      - my_network
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui
+    container_name: kafka-ui
+    ports:
+      - "9090:8080"
+    restart: always
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=local
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9093
+      - KAFKA_CLUSTERS_0_ZOOKEEPER=zookeeper:2181
+    networks:
+      - my_network
+
+  notification-ms:
+    build:
+      context: ../notification-ms
+    image: notification-ms
+    container_name: notification-ms
+    restart: always
+    ports:
+      - "8082:8082"
+    depends_on:
+      - kafka
+    extends:
+      file: common-config.yml
+      service: microservice-base-config
+
+  user-ms:
+    build:
+      context: ../user-ms
+    image: user-ms
+    container_name: user-ms
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - user_db
+    environment:
+      SPRING_APPLICATION_NAME: "user-service"
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://user_db:5432/user"
+    extends:
+      file: common-config.yml
+      service: microservice-base-config
+
+  user_db:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: user
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+    ports:
+      - "5435:5432"
+    depends_on:
+      - kafka
+    networks:
+      - my_network
+
+  book-ms:
+    build:
+      context: ../book-ms
+    image: book-ms
+    container_name: book-ms
+    restart: always
+    ports:
+      - "8081:8081"
+    depends_on:
+      - book_db
+    environment:
+      SPRING_APPLICATION_NAME: "book-service"
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://book_db:5432/book"
+    extends:
+      file: common-config.yml
+      service: microservice-base-config
+
+  book_db:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: book
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+    ports:
+      - "5436:5432"
+    depends_on:
+      - user-ms
+    networks:
+      - my_network
+
+networks:
+  my_network:
+    driver: "bridge"

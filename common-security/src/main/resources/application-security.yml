@@ -1,0 +1,5 @@
+application:
+  security:
+    secret-key: Y2FoYW5naXJ6YWRlbnVybGFuY2FoYW5naXJ6YWRlbnVybGFuY2FoYW5naXJ6YWRlbnVybGFu
+    access-token-expiration: 86400000 # a day
+    refresh-token-expiration: 604800000 # 7 days

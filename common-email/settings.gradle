@@ -1,0 +1,4 @@
+rootProject.name = 'common-email'
+include 'common-notification'
+
+project(':common-notification').projectDir = new File(settingsDir, '../common-notification')

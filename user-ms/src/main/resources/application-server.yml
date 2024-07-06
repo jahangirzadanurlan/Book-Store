@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: user-service
+  kafka:
+    producer:
+      bootstrap-servers: localhost:9092
+
+server:
+  port: 8080
+  servlet:
+    context-path: /user

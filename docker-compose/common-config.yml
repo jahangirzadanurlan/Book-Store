@@ -1,0 +1,11 @@
+services:
+  network-deploy-service:
+    networks:
+      - my_network
+  microservice-base-config:
+    extends:
+      service: network-deploy-service
+    deploy:
+      resources:
+        limits:
+          memory: 700m

@@ -1,0 +1,9 @@
+rootProject.name = 'user-ms'
+include 'common-email'
+include 'common-notification'
+include 'common-exception'
+
+project(':common-exception').projectDir = new File(settingsDir, '../common-exception')
+project(':common-notification').projectDir = new File(settingsDir, '../common-notification')
+project(':common-email').projectDir = new File(settingsDir, '../common-email')
+
